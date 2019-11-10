@@ -42,8 +42,22 @@ def mmd_rbf(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     loss = torch.mean(XX + YY - XY - YX)
     return loss
 
+def standardize(data):
+    dim = len(data[0])
+    min_max = []
+    for i in range(dim):
+        min_max.append([1e10, -1e10])
+    for node in data:
+        for i in range(dim):
+            min_max[i][0] = min(node[i], min_max[i][0])
+            min_max[i][1] = max(node[i], min_max[i][1])
+    for node in data:
+        for i in range(dim):
+            node[i] = (node[i] - min_max[i][0]) / (min_max[i][1] - min_max[i][0])
 
 def mmd_test(source, target, batch_size, sample_size):
+    standardize(source)
+    standardize(target)
 
     plt.subplot(1, 2, 1)
     plt.xlabel("source")

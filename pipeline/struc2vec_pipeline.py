@@ -1,7 +1,6 @@
 import os
 import subprocess
-import random
-import pipeline.config as config
+import config as config
 from dataset import synthetic_generator
 import test.mmd as mmd
 
@@ -67,8 +66,8 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
             represents = line.split(' ')
             for i in range(1, dim + 1):
                 node.append(float(represents[i]))
-                target_list.append(node)
-                line = f.readline()
+            target_list.append(node)
+            line = f.readline()
 
     if method == 'mmd':
         mmd.mmd_test(source_list, target_list, batch_size, sample_size)
@@ -80,4 +79,4 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
 # run_embedding(os.path.join(config.INPUT_PATH, 'block-3.edgelist'))
 # run_embedding(os.path.join(config.INPUT_PATH, 'block-1.edgelist'))
 
-run_test(os.path.join(config.OUTPUT_PATH, 'block-1.emb'), os.path.join(config.OUTPUT_PATH, 'block-3.emb'), 500, 10)
+run_test(os.path.join(config.OUTPUT_PATH, 'block-1.emb'), os.path.join(config.OUTPUT_PATH, 'block-1.emb'), 500, 10)

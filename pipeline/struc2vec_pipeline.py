@@ -1,8 +1,10 @@
 import os
 import subprocess
 import config as config
+import numpy as np
 from dataset import synthetic_generator
 import test.mmd as mmd
+import test.fastmmd as fastmmd
 
 
 def prepare_data(filename, sizes, probs, dataset='er'):
@@ -71,6 +73,11 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
 
     if method == 'mmd':
         mmd.mmd_test(source_list, target_list, batch_size, sample_size)
+    elif method == 'fastmmd':
+        sigma = []
+        for i in np.linspace(-2, 2, 21):
+            sigma.append(10 ** float(i))
+        fastmmd.mmd_test(source_list, target_list, sigma, 1024)
 
 
 # prepare_data('block-3', [250, 250, 1500], [[0.75, 0.05, 0.05], [0.05, 0.75, 0.05], [0.05, 0.05, 0.75]], dataset='block')

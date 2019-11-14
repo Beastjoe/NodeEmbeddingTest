@@ -1,6 +1,5 @@
 import matlab.engine
 import matlab
-import numpy as np
 import config
 import random
 

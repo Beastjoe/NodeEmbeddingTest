@@ -44,7 +44,7 @@ for i in range(10):
 X = torch.Tensor(same_1)
 Y = torch.Tensor(same_2)
 X, Y = Variable(X), Variable(Y)
-print("Same Distribution: " + str(mmd.mmd_rbf(X, Y)))
+print("Same Distribution: " + str(mmd._mmd_rbf(X, Y)))
 
 diff_1 = []
 for i in range(10):
@@ -56,4 +56,4 @@ for i in range(10):
 X = torch.Tensor(diff_1)
 Y = torch.Tensor(diff_2)
 X, Y = Variable(X), Variable(Y)
-print("Different Distribution: " + str(mmd.mmd_rbf(X, Y)))
+print("Different Distribution: " + str(mmd._mmd_rbf(X, Y)))

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import random
 
 
-def guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
+def _guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     '''
 
     :param source: samples from source. Size: [batch size, sample size, vector size]
@@ -31,10 +31,10 @@ def guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None
     return sum(kernel_val)  # /len(kernel_val)
 
 
-def mmd_rbf(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
+def _mmd_rbf(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     batch_size = int(source.size()[0])
-    kernels = guassian_kernel(source, target,
-                              kernel_mul=kernel_mul, kernel_num=kernel_num, fix_sigma=fix_sigma)
+    kernels = _guassian_kernel(source, target,
+                               kernel_mul=kernel_mul, kernel_num=kernel_num, fix_sigma=fix_sigma)
     XX = kernels[:batch_size, :batch_size]
     YY = kernels[batch_size:, batch_size:]
     XY = kernels[:batch_size, batch_size:]
@@ -42,7 +42,7 @@ def mmd_rbf(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     loss = torch.mean(XX + YY - XY - YX)
     return loss
 
-def standardize(data):
+def _standardize(data):
     dim = len(data[0])
     min_max = []
     for i in range(dim):
@@ -56,9 +56,9 @@ def standardize(data):
             node[i] = (node[i] - min_max[i][0]) / (min_max[i][1] - min_max[i][0])
 
 def mmd_test(source, target, batch_size, sample_size):
-    standardize(source)
-    standardize(target)
-
+    _standardize(source)
+    _standardize(target)
+    '''
     plt.subplot(1, 2, 1)
     plt.xlabel("source")
     X = []
@@ -77,7 +77,7 @@ def mmd_test(source, target, batch_size, sample_size):
         Y.append(node[1])
     plt.scatter(X, Y)
     plt.show()
-
+    '''
     source_sample = []
     for i in range(batch_size):
         source_sample.append(random.sample(source, k=sample_size))
@@ -87,4 +87,4 @@ def mmd_test(source, target, batch_size, sample_size):
     X = torch.Tensor(source_sample)
     Y = torch.Tensor(target_sample)
     X, Y = Variable(X), Variable(Y)
-    print("MMD score:" + str(mmd_rbf(X, Y)))
+    print("MMD score:" + str(_mmd_rbf(X, Y)))

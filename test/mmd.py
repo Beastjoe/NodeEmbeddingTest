@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import random
+import math
 
 
 def _guassian_kernel(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
@@ -42,6 +43,7 @@ def _mmd_rbf(source, target, kernel_mul=2.0, kernel_num=5, fix_sigma=None):
     loss = torch.mean(XX + YY - XY - YX)
     return loss
 
+
 def _standardize(data):
     dim = len(data[0])
     min_max = []
@@ -55,7 +57,18 @@ def _standardize(data):
         for i in range(dim):
             node[i] = (node[i] - min_max[i][0]) / (min_max[i][1] - min_max[i][0])
 
-def mmd_test(source, target, batch_size, sample_size):
+
+def mmd_test(source, target, batch_size, sample_size, threshold=0.05):
+    """
+    Unbiased mmd test
+
+    :param source:
+    :param target:
+    :param batch_size:
+    :param sample_size:
+    :param threshold: upper bound of probability of Type I error(false negative) occurs
+    :return:
+    """
     _standardize(source)
     _standardize(target)
     '''
@@ -87,4 +100,12 @@ def mmd_test(source, target, batch_size, sample_size):
     X = torch.Tensor(source_sample)
     Y = torch.Tensor(target_sample)
     X, Y = Variable(X), Variable(Y)
-    print("MMD score:" + str(_mmd_rbf(X, Y)))
+    mmd_score = _mmd_rbf(X, Y)
+    print("MMD score:" + str(mmd_score))
+
+    if mmd_score * mmd_score <= 4 / math.sqrt(sample_size) * math.sqrt(math.log(1 / threshold, math.e)):
+        print("Pass")
+        return True
+    else:
+        print("Fail")
+        return False

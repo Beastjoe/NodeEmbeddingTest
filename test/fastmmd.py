@@ -2,9 +2,10 @@ import matlab.engine
 import matlab
 import config
 import random
+import math
 
 
-def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fastfood"):
+def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fastfood", threshold=0.05):
     """
 
     :param source: two sample sets
@@ -13,6 +14,7 @@ def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fa
     :param nBasis: number of basis for approximating p(w)
     :param sample_size: sample size
     :param method: test method
+    :param threshold: 0.05
     :return:
     """
     eng = matlab.engine.start_matlab()
@@ -42,3 +44,20 @@ def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fa
     elif method == "MMD-linear":
         f4 = eng.MMDlinear(source_sample, target_sample, allSigmoid, nargout=1)
         print(f4)
+
+
+def _test_threshold(score, threshold, sample_size, biased=False):
+    if biased:
+        if score <= math.sqrt(2 / sample_size) * (1 + math.sqrt(2 * math.log(1 / threshold, math.e))):
+            print("Pass")
+            return True
+        else:
+            print("Fail")
+            return False
+    else:
+        if score * score <= 4 / math.sqrt(sample_size) * math.sqrt(math.log(1 / threshold, math.e)):
+            print("Pass")
+            return True
+        else:
+            print("Fail")
+            return False

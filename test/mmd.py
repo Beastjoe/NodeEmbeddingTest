@@ -73,7 +73,7 @@ def mmd_test(source, target, batch_size, sample_size, threshold=0.05):
     _standardize(target)
     '''
     plt.subplot(1, 2, 1)
-    plt.xlabel("source")
+    plt.xlabel("source(ER-1)")
     X = []
     Y = []
     for node in source:
@@ -82,7 +82,7 @@ def mmd_test(source, target, batch_size, sample_size, threshold=0.05):
     plt.scatter(X, Y)
 
     plt.subplot(1, 2, 2)
-    plt.xlabel("target")
+    plt.xlabel("target(ER-2)")
     X = []
     Y = []
     for node in target:

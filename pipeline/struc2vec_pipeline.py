@@ -81,7 +81,6 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
         for i in np.linspace(-2, 2, 21):
             sigma.append(10 ** float(i))
         fastmmd.mmd_test(source_list, target_list, sigma, 1024, 500)
-        #fastmmd.mmd_test(source_list, target_list, sigma, 1024)
     elif method == 'ase':
         ase.ase_test(source_list, target_list, sample_size, 200)
 

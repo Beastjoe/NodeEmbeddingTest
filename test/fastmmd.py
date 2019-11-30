@@ -5,7 +5,7 @@ import config
 import random
 
 
-def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fastfood"):
+def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="MMD-unbiased"):
     """
 
     :param source: two sample sets
@@ -21,10 +21,9 @@ def mmd_test(source, target, allSigmoid, nBasis, sample_size, method="FastMMD-Fa
     source_sample = matlab.double(random.sample(source, k=sample_size))
     target_sample = matlab.double(random.sample(target, k=sample_size))
     allSigmoid = matlab.double(allSigmoid)
-    nBasis = matlab.double(nBasis)
     if method == "MMD-unbiased":
-        d1, f1 = eng.MMD3(source_sample, target_sample, allSigmoid, nargout=2)
-        print(f1)
+        d1, f1, ds1, ds2, ds3 = eng.MMD3(source_sample, target_sample, allSigmoid, nargout=5)
+        print(ds2)
     elif method == "MMD-biased":
         d1, f1 = eng.MMD3(source_sample, target_sample, allSigmoid, nargout=2)
         print(d1)

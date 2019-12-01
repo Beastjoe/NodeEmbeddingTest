@@ -22,6 +22,8 @@ def prepare_data(filename, sizes, probs, dataset='er'):
         graph = synthetic_generator.generate_erdos_renyi_graph(sizes, probs)
     elif dataset == 'block':
         graph = synthetic_generator.generate_stochastic_block_model(sizes, probs)
+    elif dataset == 'kronecker':
+        graph = synthetic_generator.generate_stochastic_kronecker_graph(sizes, probs)
 
     input_file_path = os.path.join(config.INPUT_PATH, filename + '.edgelist')
     with open(input_file_path, 'w') as f:
@@ -29,10 +31,10 @@ def prepare_data(filename, sizes, probs, dataset='er'):
             f.write(str(e[0]) + ' ' + str(e[1]) + '\n')
 
 
-def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=2,
+def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=128,
                   opt1=True,
                   opt2=True, opt3=True, until_layer=6):
-    output_filename = os.path.split(input_file_path)[-1].split('.')[0] + '.emb'
+    output_filename = os.path.split(input_file_path)[-1].split('.')[0] + '_128d_struct2vec' + '.emb'
 
     commands = ['python', config.STRUC2VEC_MAIN_PATH, '--input', input_file_path, '--output',
                 os.path.join(output_path, output_filename),
@@ -75,7 +77,11 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
             line = f.readline()
 
     if method == 'mmd':
-        mmd.mmd_test(source_list, target_list, batch_size, sample_size)
+        sigma = []
+        for i in np.linspace(-2, 2, 21):
+            sigma.append(10 ** float(i))
+        fastmmd.mmd_test(source_list, target_list, sigma, 1024, 1000)
+        # mmd.mmd_test(source_list, target_list, batch_size, sample_size)
     elif method == 'fastmmd':
         sigma = []
         for i in np.linspace(-2, 2, 21):
@@ -85,12 +91,27 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
         ase.ase_test(source_list, target_list, sample_size, 200)
 
 
-# prepare_data('block-3', [250, 250, 1500], [[0.75, 0.05, 0.05], [0.05, 0.75, 0.05], [0.05, 0.05, 0.75]], dataset='block')
-# prepare_data('block-1', [250, 250, 1500], [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1]], dataset='block')
+'''
+for i in range(10):
+    prepare_data('block-3_' + str(i), [100, 100, 300], [[0.75, 0.05, 0.05], [0.05, 0.75, 0.05], [0.05, 0.05, 0.75]],
+                 dataset='block')
+    prepare_data('block-1_' + str(i), [100, 100, 300], [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1]],
+                 dataset='block')
+    prepare_data('er-05_' + str(i), 500, 0.5,
+                 dataset='er')
+    prepare_data('er-005_' + str(i), 500, 0.05,
+                 dataset='er')
+    prepare_data('kronecker-1_' + str(i), 9, np.array([[0.98, 0.58], [0.58, 0.6]]), dataset='kronecker')
+    prepare_data('kronecker-2_' + str(i), 9, np.array([[0.5, 0.8], [0.8, 0.9]]), dataset='kronecker')
+'''
+for i in range(10):
+    run_embedding(os.path.join(config.INPUT_PATH, 'block-3_' + str(i) + '.edgelist'))
+    run_embedding(os.path.join(config.INPUT_PATH, 'block-1_' + str(i) + '.edgelist'))
+    run_embedding(os.path.join(config.INPUT_PATH, 'er-05_' + str(i) + '.edgelist'))
+    run_embedding(os.path.join(config.INPUT_PATH, 'er-005_' + str(i) + '.edgelist'))
+    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-1_' + str(i) + '.edgelist'))
+    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-2_' + str(i) + '.edgelist'))
 
-#run_embedding(os.path.join(config.INPUT_PATH, 'block-3.edgelist'))
-#run_embedding(os.path.join(config.INPUT_PATH, 'block-1.edgelist'))
-#run_embedding(os.path.join(config.INPUT_PATH, 'er-05.edgelist'))
-#run_embedding(os.path.join(config.INPUT_PATH, 'er-005.edgelist'))
-
-run_test(os.path.join(config.OUTPUT_PATH, 'block-1.emb'), os.path.join(config.OUTPUT_PATH, 'block-1.emb'), 500, 10)
+# for i in range(10):
+#    for j in range(10):
+#        run_test(os.path.join(config.OUTPUT_PATH, 'block-1_'+str(i)+'.emb'), os.path.join(config.OUTPUT_PATH, 'block-3_'+str(j)+'.emb'), 2000, 1)

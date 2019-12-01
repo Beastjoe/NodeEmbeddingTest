@@ -1,4 +1,6 @@
 import networkx as nx
+from dataset import KroneckerGenerator
+from dataset.KroneckerInitMatrix import InitMatrix
 
 
 def generate_stochastic_block_model(sizes, probs):
@@ -20,3 +22,11 @@ def generate_erdos_renyi_graph(size, prob):
     :return: Erdos-Renyi graph NetworkX Graph
     """
     return nx.gnp_random_graph(size, prob)
+
+
+def generate_stochastic_kronecker_graph(k, prob):
+    nodes = 2
+    init = InitMatrix(nodes)
+    init.make()
+    init.makeStochasticCustom(prob)
+    return KroneckerGenerator.generateStochasticKron(init, k, True)

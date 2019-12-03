@@ -31,7 +31,7 @@ def prepare_data(filename, sizes, probs, dataset='er'):
             f.write(str(e[0]) + ' ' + str(e[1]) + '\n')
 
 
-def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=128,
+def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=2,
                   opt1=True,
                   opt2=True, opt3=True, until_layer=6):
     output_filename = os.path.split(input_file_path)[-1].split('.')[0] + '_128d_struct2vec' + '.emb'
@@ -104,13 +104,7 @@ for i in range(10):
     prepare_data('kronecker-1_' + str(i), 9, np.array([[0.98, 0.58], [0.58, 0.6]]), dataset='kronecker')
     prepare_data('kronecker-2_' + str(i), 9, np.array([[0.5, 0.8], [0.8, 0.9]]), dataset='kronecker')
 '''
-for i in range(10):
-    run_embedding(os.path.join(config.INPUT_PATH, 'block-3_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'block-1_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'er-05_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'er-005_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-1_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-2_' + str(i) + '.edgelist'))
+run_embedding(os.path.join(config.INPUT_PATH, 'CA-AstroPh_flip_0_0.01.edgelist'))
 
 # for i in range(10):
 #    for j in range(10):

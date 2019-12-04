@@ -61,12 +61,13 @@ class WaveletMachine:
         """
         self.real_and_imaginary = []
         for node in tqdm(range(self.number_of_nodes)):
-            tmp = []
-            tmp.append(node)
+            # tmp = []
+            # tmp.append(node)
             impulse = np.zeros((self.number_of_nodes))
             impulse[node] = 1
             wavelet_coefficients = pygsp.filters.approximations.cheby_op(self.G, self.chebyshev, impulse)
-            tmp = tmp + [np.mean(np.exp(wavelet_coefficients*1*step*1j)) for step in self.steps]
+            # tmp = tmp + [np.mean(np.exp(wavelet_coefficients*1*step*1j)) for step in self.steps]
+            tmp = [np.mean(np.exp(wavelet_coefficients*1*step*1j)) for step in self.steps]
             self.real_and_imaginary.append(tmp)
         self.real_and_imaginary = np.array(self.real_and_imaginary)
 
@@ -103,5 +104,9 @@ class WaveletMachine:
         # self.real_and_imaginary.index = self.real_and_imaginary.index.astype(locate(self.settings.node_label_type))
         # self.real_and_imaginary = self.real_and_imaginary.sort_index()
         # self.real_and_imaginary.to_csv(self.settings.output)
-        np.savetxt(self.settings.output, self.real_and_imaginary, header='{} {}'.format(self.number_of_nodes, self.settings.sample_number*2))
+        idx = np.array([[x] for x in range(self.number_of_nodes)])
+        self.real_and_imaginary = np.concatenate([idx, self.real_and_imaginary], axis=1)
+        with open(self.settings.output, 'w') as f:
+            f.write('{} {}\n'.format(self.number_of_nodes, self.settings.sample_number*2))
+            np.savetxt(f, self.real_and_imaginary)
 

@@ -42,7 +42,7 @@ def parse_args():
 	parser.add_argument('--iter', default=5, type=int,
                       help='Number of epochs in SGD')
 
-	parser.add_argument('--workers', type=int, default=4,
+	parser.add_argument('--workers', type=int, default=12,
 	                    help='Number of parallel workers. Default is 8.')
 
 	parser.add_argument('--weighted', dest='weighted', action='store_true',

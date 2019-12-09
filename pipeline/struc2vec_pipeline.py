@@ -38,7 +38,7 @@ def prepare_data(filename, sizes, probs, dataset='er'):
             f.write(str(e[0]) + ' ' + str(e[1]) + '\n')
 
 
-def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=128,
+def run_embedding(input_file_path, output_path=config.OUTPUT_PATH, num_walks=20, walk_length=80, window_size=5, dim=2,
                   opt1=True,
                   opt2=True, opt3=True, until_layer=6):
     output_filename = os.path.split(input_file_path)[-1].split('.')[0] + '_128d_struct2vec' + '.emb'

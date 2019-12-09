@@ -1,13 +1,20 @@
 import os
 import subprocess
-import matlab.engine
-import matlab
+# import matlab.engine
+# import matlab
 import config as config
 import numpy as np
 from dataset import synthetic_generator
-import test.mmd as mmd
-import test.fastmmd as fastmmd
-import test.ase as ase
+# import test.mmd as mmd
+# import test.fastmmd as fastmmd
+# import test.ase as ase
+from graspy.inference import LatentDistributionTest
+from graspy.embed import AdjacencySpectralEmbed
+from graspy.simulations import sbm, rdpg
+from graspy.utils import symmetrize
+from graspy.plot import heatmap, pairplot
+import matplotlib.pyplot as plt
+import networkx as nx
 
 
 def prepare_data(filename, sizes, probs, dataset='er'):
@@ -91,27 +98,43 @@ def run_test(input_source_file_path, intput_target_file_path, sample_size, batch
         ase.ase_test(source_list, target_list, sample_size, 200)
 
 
-'''
-for i in range(10):
-    prepare_data('block-3_' + str(i), [100, 100, 300], [[0.75, 0.05, 0.05], [0.05, 0.75, 0.05], [0.05, 0.05, 0.75]],
-                 dataset='block')
-    prepare_data('block-1_' + str(i), [100, 100, 300], [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1]],
-                 dataset='block')
-    prepare_data('er-05_' + str(i), 500, 0.5,
+
+for i in range(10, 20):
+    # prepare_data('block-3_' + str(i), [100, 100, 300], [[0.75, 0.05, 0.05], [0.05, 0.75, 0.05], [0.05, 0.05, 0.75]],
+    #              dataset='block')
+    # prepare_data('block-1_' + str(i), [100, 100, 300], [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1]],
+    #              dataset='block')
+    prepare_data('er-05_' + str(i), 100, 0.5,
                  dataset='er')
-    prepare_data('er-005_' + str(i), 500, 0.05,
+    prepare_data('er-005_' + str(i), 100, 0.35,
                  dataset='er')
-    prepare_data('kronecker-1_' + str(i), 9, np.array([[0.98, 0.58], [0.58, 0.6]]), dataset='kronecker')
-    prepare_data('kronecker-2_' + str(i), 9, np.array([[0.5, 0.8], [0.8, 0.9]]), dataset='kronecker')
-'''
-for i in range(10):
-    run_embedding(os.path.join(config.INPUT_PATH, 'block-3_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'block-1_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'er-05_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'er-005_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-1_' + str(i) + '.edgelist'))
-    run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-2_' + str(i) + '.edgelist'))
+    # prepare_data('kronecker-1_' + str(i), 9, np.array([[0.98, 0.58], [0.58, 0.6]]), dataset='kronecker')
+    # prepare_data('kronecker-2_' + str(i), 9, np.array([[0.5, 0.8], [0.8, 0.9]]), dataset='kronecker')
+
+# for i in range(10):
+#     run_embedding(os.path.join(config.INPUT_PATH, 'block-3_' + str(i) + '.edgelist'))
+#     run_embedding(os.path.join(config.INPUT_PATH, 'block-1_' + str(i) + '.edgelist'))
+#     run_embedding(os.path.join(config.INPUT_PATH, 'er-05_' + str(i) + '.edgelist'))
+#     run_embedding(os.path.join(config.INPUT_PATH, 'er-005_' + str(i) + '.edgelist'))
+#     run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-1_' + str(i) + '.edgelist'))
+#     run_embedding(os.path.join(config.INPUT_PATH, 'kronecker-2_' + str(i) + '.edgelist'))
 
 # for i in range(10):
 #    for j in range(10):
 #        run_test(os.path.join(config.OUTPUT_PATH, 'block-1_'+str(i)+'.emb'), os.path.join(config.OUTPUT_PATH, 'block-3_'+str(j)+'.emb'), 2000, 1)
+
+for i in range(10, 20):
+    for j in range(10, 20):
+        G_er = nx.read_edgelist("../input/er-05_{}.edgelist".format(i))
+        G_k = nx.read_edgelist("../input/er-005_{}.edgelist".format(j))
+
+        ldt = LatentDistributionTest()
+        p = ldt.fit(G_er, G_k)
+        print(p)
+
+# fig, ax = plt.subplots(figsize=(10, 6))
+# ax.hist(ldt.null_distribution_, 50)
+# ax.axvline(ldt.sample_T_statistic_, color='r')
+# ax.set_title("P-value = {}".format(p), fontsize=20)
+# plt.show();
+
